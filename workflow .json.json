@@ -1,0 +1,223 @@
+{
+  "name": "EmergencyAlert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "unitysync",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        224
+      ],
+      "webhookId": "unitysync-webhook",
+      "id": "332c9237-a7ca-4fcc-a6b0-ff0fd1747fd1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.status }}",
+              "value2": "URGENT"
+            }
+          ]
+        }
+      },
+      "name": "IF Urgent",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        32,
+        256
+      ],
+      "id": "d688e4a7-da87-45bb-8337-c84d8c53ffd6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8761045753:AAEiiY15ZfgSPiw2ebELEnYNEK-KYefRIm8/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"6755600787\",\n  \"text\": \"🚨 *UnitySync Dispatch* 🚨\\n\\n*Category:* {{ $json.body.category }}\\n*Description:* {{ $json.body.request }}\\n*Volunteer:* {{ $json.body.volunteer }}\\n*Time:* {{ $json.body.time }}\",\n  \"parse_mode\": \"Markdown\"\n}",
+        "options": {}
+      },
+      "name": "Telegram Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        336,
+        128
+      ],
+      "id": "e8c41651-1979-4772-ac12-5a5730bc0033"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/webhooks/1497155557780492450/II8TkXT0V0-CpmMSFQa82gk7mg1iIamEBNqICR9hMtaYB7yMIrzTbGrlnBP9tnRdMr9p",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"🚨 **UnitySync Volunteer Dispatch**\\n\\n**Name:** {{ $json.body.volunteer }} ({{ $json.body.Vol_ID }})\\n**Skill:** {{ $json.body.Skill }}\\n**Transport:** {{ $json.body.Mode_of_Transport }}\\n**Status:** {{ $json.body.Status }}\\n\\n📍 **Location:** [Google Maps](https://www.google.com/maps?q={{ $json.body.Lat }},{{ $json.body.Long }})\"\n}",
+        "options": {}
+      },
+      "name": "Discord Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        352,
+        352
+      ],
+      "id": "a029ef3f-1d25-4cb2-b228-3ab39917e820"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1MkfUq84lTP-EGpefRtO01s24fHgArePh-DP1kwpcgis",
+          "mode": "list",
+          "cachedResultName": "Google.data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MkfUq84lTP-EGpefRtO01s24fHgArePh-DP1kwpcgis/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MkfUq84lTP-EGpefRtO01s24fHgArePh-DP1kwpcgis/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "={{ $json.body.status }}",
+            "category": "={{ $json.body.category }}",
+            "request": "={{ $json.body.request }}",
+            "time": "={{ $json.body.time }}",
+            "volunteer": "={{ $json.body.volunteer }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "request",
+              "displayName": "request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "volunteer",
+              "displayName": "volunteer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        16,
+        80
+      ],
+      "id": "024d6937-4771-4dc7-af01-6421c12b6ffa",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Hchiyn09qe3nvKlC",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IF Urgent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Urgent": {
+      "main": [
+        [
+          {
+            "node": "Discord Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d4e3f357-df97-4d1c-b002-3dc3873f5212",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8f63c56146ffff74ca6312bd13ff874c89260435a0b0d6c13f1acb7bd48ce8bd"
+  },
+  "id": "U0FrFBavSb2bpmik",
+  "tags": []
+}
